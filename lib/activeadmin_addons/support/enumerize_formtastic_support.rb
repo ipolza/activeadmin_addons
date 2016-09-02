@@ -21,4 +21,4 @@ module ActiveAdminAddons
   end
 end
 
-::Formtastic::FormBuilder.send :include, ActiveAdminAddons::RansackFormBuilderExtension
+# ::Formtastic::FormBuilder.send :include, ActiveAdminAddons::RansackFormBuilderExtension
