@@ -43,5 +43,9 @@ module ActiveAdminAddons
     def has_opts?
       @has_opts ||= args.last.is_a?(Hash)
     end
+
+    def empty_value
+      context.span I18n.t('active_admin.empty'), class: "empty"
+    end
   end
 end

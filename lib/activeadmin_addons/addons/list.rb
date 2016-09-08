@@ -6,14 +6,22 @@ class ListBuilder < ActiveAdminAddons::CustomBuilder
     return if data.nil?
 
     raise 'invalid list type (ul, ol)' unless [:ul, :ol].include?(options[:list_type])
-    raise "list must be Array or Hash" if !data.is_a?(Hash) && !data.is_a?(Array)
 
     @level = []
     render_list(data)
   end
 
   def render_list(_data)
-    _data.is_a?(Array) ? render_array(_data) : render_hash(_data)
+    case _data.class.to_s
+    when 'Hash'
+      render_hash(_data)
+    when 'Array'
+      render_array(_data)
+    when 'Enumerize::Set'
+      render_enumerize_set(_data)
+    else
+      raise 'list must be Array, Hash or Enumerize::Set'
+    end
   end
 
   def list?(_data)
@@ -22,6 +30,16 @@ class ListBuilder < ActiveAdminAddons::CustomBuilder
 
   def localized_value(model, attribute)
     I18n.t("addons_list.#{model.class.name.underscore}.#{attribute}.#{@level.join('_')}")
+  end
+
+  def render_enumerize_set(_data)
+    return empty_value if _data.empty?
+    context.content_tag(options[:list_type]) do
+      _data.each do |value|
+        value = value.try(:text)
+        context.concat(context.content_tag(:li, value))
+      end
+    end
   end
 
   def render_array(_data)
